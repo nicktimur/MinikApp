@@ -18,7 +18,6 @@ namespace WindowsFormsApp
             InitializeComponent();
             InitializeMyControl();
         }
-
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -28,12 +27,56 @@ namespace WindowsFormsApp
         {
 
         }
-
+        public class FormProvider
+        {
+            public static Form1 Form1
+            {
+                get
+                {
+                    if (_form1 == null)
+                    {
+                        _form1 = new Form1();
+                    }
+                    return _form1;
+                }
+            }
+            private static Form1 _form1;
+        }
         private void label7_Click(object sender, EventArgs e)
         {
-            Form1 form = new Form1();
+
             this.Hide();
-            form.Show();
+            FormProvider.Form1.Show();
+        }
+        public bool VerifyControl()
+        {
+            bool b = false;
+            try
+            {
+                SQLiteConnection baglan = new SQLiteConnection();
+                baglan.ConnectionString = ("Data Source = db/data.db");
+                baglan.Open();
+                SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM hesaplar Where Posta = '" + PostBox.Text.ToLower() + "' ", baglan);
+                cmd.ExecuteNonQuery();
+                SQLiteDataReader oku;
+                oku = cmd.ExecuteReader();
+
+                while (oku.Read())
+                {
+                    if (oku["Doğrulanmış"].ToString() == "1")
+                    {
+                        b = true;
+                    }
+                }
+                baglan.Close();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return b;
+
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -56,7 +99,6 @@ namespace WindowsFormsApp
                     SQLiteParameter prm4 = new SQLiteParameter("@posta", PostBox.Text.ToLower());
                     SQLiteParameter prm5 = new SQLiteParameter("@şifre", PassBox.Text);
                     SQLiteCommand cmd = new SQLiteCommand(sql, baglan);
-
                     cmd.Parameters.Add(prm4);
                     cmd.Parameters.Add(prm5);
                     DataTable dt = new DataTable();
@@ -65,13 +107,26 @@ namespace WindowsFormsApp
                     
                     if (dt.Rows.Count > 0)
                     {
-                        MainForm main = new MainForm();
-                        main.Postbox = PostBox.Text.ToLower().ToString();
-                        MessageBox.Show("Giriş Başarıyla Yapıldı." + "  Yönlendiriliyor. ","Giriş Başarılı", MessageBoxButtons.OK);
-                        PostBox.Clear();
-                        PassBox.Clear();
-                        this.Hide();
-                        main.Show();
+                        baglan.Close();
+                        if (VerifyControl() == true)
+                        {
+                            MainForm main = new MainForm();
+                            main.Postbox = PostBox.Text.ToLower().ToString();
+                            MessageBox.Show("Giriş Başarıyla Yapıldı." + "  Yönlendiriliyor. ", "Giriş Başarılı", MessageBoxButtons.OK);
+                            PostBox.Clear();
+                            PassBox.Clear();
+                            this.Hide();
+                            main.Show();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Mail adresi doğrulanmamış.", "Hata", MessageBoxButtons.OK);
+                            Form1 form1 = new Form1();
+                            form1.verify = 1;
+                            form1.Post = PostBox.Text;
+                            form1.Show();
+                            this.Hide();
+                        }
                     }
 
                     else
@@ -79,7 +134,7 @@ namespace WindowsFormsApp
                         MessageBox.Show("E-Posta Hesabınız Veya Şifreniz Hatalı.");
                         PassBox.Clear();
                     }
-
+                    baglan.Close();
                 }
                 catch (Exception ex)
                 {

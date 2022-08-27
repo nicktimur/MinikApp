@@ -68,10 +68,26 @@ namespace WindowsFormsApp
             SQLiteConnection baglan = new SQLiteConnection();
             baglan.ConnectionString = ("Data Source = db/data.db");
             baglan.Open();
-            string sql = "UPDATE hesaplar SET Puan = '"+score +"' WHERE Posta = '" + Postbox +"' ";
-            SQLiteCommand cmd = new SQLiteCommand(sql, baglan);
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM hesaplar Where Posta = '" + Postbox + "' ", baglan);
             cmd.ExecuteNonQuery();
+            SQLiteDataReader oku;
+            oku = cmd.ExecuteReader();
+            int maxpuan = 0;
+            while (oku.Read())
+            {
+                Int32.TryParse(oku["Puan"].ToString(), out maxpuan);
+            }
             baglan.Close();
+            if (maxpuan<score)
+            {
+                SQLiteConnection baglan2 = new SQLiteConnection();
+                baglan2.ConnectionString = ("Data Source = db/data.db");
+                baglan2.Open();
+                string sql2 = "UPDATE hesaplar SET Puan = '" + score + "' WHERE Posta = '" + Postbox + "' ";
+                SQLiteCommand cmdd = new SQLiteCommand(sql2, baglan2);
+                cmdd.ExecuteNonQuery();
+            }
+          
             gameTimer.Stop(); // stop the main timer
             intscore.Text += " Oyun Bitti!!!"; // show the game over text on the score text, += is used to add the new string of text next to the score instead of overriding it
         }
@@ -242,6 +258,7 @@ namespace WindowsFormsApp
             this.Name = "Form3";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Flappy Bird Game";
+            this.Load += new System.EventHandler(this.Form3_Load_1);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gamekeyisdown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.gamekeyisup);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -268,27 +285,19 @@ namespace WindowsFormsApp
         {
 
         }
-        public class FormProvider
-        {
-            public static MainForm MainMenu
-            {
-                get
-                {
-                    if (_mainMenu == null)
-                    {
-                        _mainMenu = new MainForm();
-                    }
-                    return _mainMenu;
-                }
-            }
-            private static MainForm _mainMenu;
-        }
+
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             this.Close();
-            FormProvider.MainMenu.Postbox = Postbox;
-            FormProvider.MainMenu.Show();
+            MainForm MMenu = new MainForm();
+            MMenu.Show();
+            MMenu.Postbox = Postbox.ToString();
+        }
+
+        private void Form3_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

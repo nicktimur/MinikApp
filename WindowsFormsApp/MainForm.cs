@@ -23,6 +23,7 @@ namespace WindowsFormsApp
             SQLiteConnection baglan = new SQLiteConnection();
             baglan.ConnectionString = ("Data Source = db/data.db");
             baglan.Open();
+            //MessageBox.Show("Postbox = " + Postbox);
             SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM hesaplar Where Posta = '" + Postbox + "' ", baglan);
             cmd.ExecuteNonQuery();
             SQLiteDataReader oku;
@@ -92,6 +93,7 @@ namespace WindowsFormsApp
         {
 
         }
+
         bool move;
         int mouse_x;
         int mouse_y;
@@ -120,7 +122,6 @@ namespace WindowsFormsApp
         private void MainForm_Load(object sender, EventArgs e)
         {
             this.Opacity = 96;
-            bilgi_getir();
         }
 
         private void label5_Click(object sender, EventArgs e)
@@ -128,16 +129,23 @@ namespace WindowsFormsApp
 
         }
 
+        
+
         private void button1_Click(object sender, EventArgs e)
         {
-            Form3 f = new Form3();
-            f.Postbox = Postbox;
-            f.Show();
+            Form3 f3 = new Form3();
+            f3.Postbox = Postbox.ToString();
+            f3.Show();
             this.Hide();
         }
         private void MainForm_MouseEnter(object sender, EventArgs e)
         {
+            bilgi_getir();
+        }
 
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            
         }
     }
 }
