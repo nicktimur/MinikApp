@@ -210,5 +210,10 @@ namespace WindowsFormsApp
         {
             move = false;
         }
+
+        private void PostBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

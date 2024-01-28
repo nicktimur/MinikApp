@@ -103,6 +103,7 @@
             this.PostBox.Name = "PostBox";
             this.PostBox.Size = new System.Drawing.Size(192, 20);
             this.PostBox.TabIndex = 20;
+            this.PostBox.TextChanged += new System.EventHandler(this.PostBox_TextChanged);
             // 
             // label2
             // 

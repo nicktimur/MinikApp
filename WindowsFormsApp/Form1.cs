@@ -330,5 +330,10 @@ namespace WindowsFormsApp
                 kodBox.Clear();
             }
         }
+
+        private void PostBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
